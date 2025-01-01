@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:wellnest/Application/home/home_cubit.dart';
 import 'package:wellnest/Domain/Failure/failure.dart';
 import 'package:wellnest/Presentation/Messages/chat.dart';
 import 'package:wellnest/Presentation/Messages/messages.dart';
+import 'package:wellnest/Presentation/Splash/notification.dart';
 import 'package:wellnest/Presentation/common%20widgets/snackbar.dart';
 import 'package:wellnest/Presentation/common%20widgets/tips_widget.dart';
 import 'package:wellnest/Presentation/constants/constants.dart';
@@ -15,6 +17,11 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+       NotificationHandle().getDeviceToken().then((value) {
+        print(value);
+      });
+       NotificationHandle().firebaseInit(context);
+       NotificationHandle().setupInteractMessage(context);
     WidgetsBinding.instance.addPostFrameCallback((timestamp) {
       final bloc = BlocProvider.of<HomeCubit>(context).state;
       bloc.isFailureOrSuccess.fold(
@@ -24,6 +31,17 @@ class HomePage extends StatelessWidget {
         (either) => either.fold(
           (failure) {
             BlocProvider.of<HomeCubit>(context).getDetails();
+          },
+          (r) {},
+        ),
+      );
+      bloc.isFailureOrSuccessViewBookings.fold(
+        () {
+          BlocProvider.of<HomeCubit>(context).viewBookings();
+        },
+        (either) => either.fold(
+          (failure) {
+            BlocProvider.of<HomeCubit>(context).viewBookings();
           },
           (r) {},
         ),
@@ -91,6 +109,41 @@ class HomePage extends StatelessWidget {
                           (r) {},
                         ),
                       );
+
+                      state.isFailureOrSuccessViewBookings.fold(
+                        () {},
+                        (either) => either.fold(
+                          (failure) {
+                            if (!state.isLoadingViewBookings) {
+                              if (failure ==
+                                  const MainFailure.serverFailure()) {
+                                displaySnackBar(
+                                    context: context, text: "Server is down");
+                              } else if (failure ==
+                                  const MainFailure.clientFailure()) {
+                                displaySnackBar(
+                                    context: context,
+                                    text: "Something wrong with your network");
+                              } else {
+                                displaySnackBar(
+                                    context: context,
+                                    text: "Something Unexpected Happened");
+                              }
+                            }
+                          },
+                          (r) {},
+                        ),
+                      );
+
+                      state.isFailureOrSuccessStartChat.fold(() {}, (either) {
+                        either.fold((l) {}, (r) {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ChatPage(
+                                    id: r.room!,
+                                    name: r.doctorName!,
+                                  )));
+                        });
+                      });
                     },
                     builder: (context, state) {
                       if (state.isLoading) {
@@ -137,29 +190,159 @@ class HomePage extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ))),
               kheight20,
-              SizedBox(
-                height: size * 0.4,
-                child: ListView.separated(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const ChatPage()));
+              BlocConsumer<HomeCubit, HomeState>(
+                listener: (context, state) {
+                  state.isFailureOrSuccessViewBookings.fold(
+                    () {},
+                    (either) => either.fold(
+                      (failure) {
+                        if (!state.isLoading) {
+                          if (failure == const MainFailure.serverFailure()) {
+                            displaySnackBar(
+                                context: context, text: "Server is down");
+                          } else if (failure ==
+                              const MainFailure.clientFailure()) {
+                            displaySnackBar(
+                                context: context,
+                                text: "Something wrong with your network");
+                          } else {
+                            displaySnackBar(
+                                context: context,
+                                text: "Something Unexpected Happened");
+                          }
+                        }
+                      },
+                      (r) {},
+                    ),
+                  );
+                },
+                builder: (context, state) {
+                  if (state.isLoadingViewBookings) {
+                    return SizedBox(
+                      height: size * 0.4,
+                      child: ListView.separated(
+                        separatorBuilder: (context, index) => kwidth10,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return Shimmer.fromColors(
+                            baseColor: const Color.fromARGB(255, 0, 0, 0),
+                            highlightColor:
+                                const Color.fromARGB(255, 207, 207, 207),
+                            child: Container(
+                              width: (size - 12) * 0.8,
+                              height: (size - 12) * 0.4,
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(34, 0, 0, 0),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                          );
                         },
-                        child: AppointmentTileWidget(
-                            size: size - 12,
-                            name: 'Dr. John Doe',
-                            speciality: 'Cardiologist',
-                            date: 'Monday July 13',
-                            time: '10:00 AM'),
+                        itemCount: 5,
+                      ),
+                    );
+                  }
+
+                  return state.isFailureOrSuccessViewBookings.fold(
+                    () {
+                      return Center(
+                        child: Text(
+                          'No Upcoming Appointments',
+                          style: GoogleFonts.poppins(
+                              textStyle: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          )),
+                          softWrap: true,
+                          textAlign: TextAlign.center,
+                        ),
                       );
                     },
-                    separatorBuilder: (context, index) {
-                      return kwidth10;
-                    },
-                    itemCount: 5),
+                    (either) => either.fold(
+                      (failure) {
+                        return Center(
+                          child: Text(
+                            'No Upcoming Appointments',
+                            style: GoogleFonts.poppins(
+                                textStyle: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            )),
+                            softWrap: true,
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      },
+                      (r) {
+                        return r.bookings!.isEmpty || r.bookings == null
+                            ? Center(
+                                child: Text(
+                                  'No Upcoming Appointments',
+                                  style: GoogleFonts.poppins(
+                                      textStyle: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  )),
+                                  softWrap: true,
+                                  textAlign: TextAlign.center,
+                                ),
+                              )
+                            : SizedBox(
+                                height: size * 0.4,
+                                child: ListView.separated(
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) {
+                                      DateTime dateTime = DateTime.parse(
+                                          r.bookings![index].datetime!);
+                                      DateTime time = DateTime.parse(
+                                          r.bookings![index].bookdate!);
+                                      String formattedDate =
+                                          DateFormat('yyyy-MM-dd').format(time);
+                                      String formattedTime =
+                                          DateFormat('hh:mm a')
+                                              .format(dateTime);
+                                      return GestureDetector(
+                                        onTap: () {
+                                          DateTime now = DateTime.now();
+                                          String currentDate =
+                                              DateFormat('yyyy-MM-dd')
+                                                  .format(now);
+                                          String currentTime =
+                                              DateFormat('hh:mm a').format(now);
+                                          if (currentDate == formattedDate &&
+                                              currentTime == formattedTime) {
+                                            BlocProvider.of<HomeCubit>(context)
+                                                .startChat(r.bookings![index].id
+                                                    .toString());
+                                          } else {
+                                            displaySnackBar(
+                                                context: context,
+                                                text:
+                                                    "You can only chat with the doctor at the time of appointment");
+                                          }
+                                        },
+                                        child: AppointmentTileWidget(
+                                            size: size - 12,
+                                            name:
+                                                r.bookings![index].doctorName!,
+                                            date: formattedDate,
+                                            time: formattedTime),
+                                      );
+                                    },
+                                    separatorBuilder: (context, index) {
+                                      return kwidth10;
+                                    },
+                                    itemCount: r.bookings!.length),
+                              );
+                      },
+                    ),
+                  );
+                },
               ),
               kheight50,
               Text('Health Tips',
@@ -218,14 +401,13 @@ class AppointmentTileWidget extends StatelessWidget {
     super.key,
     required this.size,
     required this.name,
-    required this.speciality,
     required this.date,
     required this.time,
   });
 
   final double size;
   final String name;
-  final String speciality;
+
   final String date;
   final String time;
 
@@ -277,15 +459,6 @@ class AppointmentTileWidget extends StatelessWidget {
                             fontSize: 17,
                             fontWeight: FontWeight.w600,
                           ))),
-                      Text(
-                        speciality,
-                        style: GoogleFonts.poppins(
-                            textStyle: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                        )),
-                      ),
                     ],
                   ),
                 ),

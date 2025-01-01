@@ -10,14 +10,14 @@ import 'package:wellnest/Presentation/constants/constants.dart';
 @LazySingleton(as: SignUpService)
 class SignUpRepo implements SignUpService {
   @override
-  Future<Either<MainFailure, Unit>> signUp({required String email, required String password}) async {
+  Future<Either<MainFailure, Unit>> signUp({required String email, required String password,String? deviceid}) async {
     try {
       final Map<String, dynamic> headers = {
         'Content-Type': 'application/json',
       };
       final Response response = await Dio(BaseOptions(headers: headers)).post(
         "${baseUrl}api/UserReg",
-        data: {"email": email, "password": password},
+        data: {"email": email, "password": password, "deviceid": deviceid},
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         log(response.data.toString());

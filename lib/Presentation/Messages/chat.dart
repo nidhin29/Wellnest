@@ -1,13 +1,21 @@
+import 'dart:async';
+
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:wellnest/Application/message/message_cubit.dart';
 import 'package:wellnest/Presentation/Messages/messages.dart';
 import 'package:wellnest/Presentation/common%20widgets/reply_msg.dart';
 import 'package:wellnest/Presentation/common%20widgets/self_msg.dart';
 import 'package:wellnest/Presentation/constants/constants.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final int id;
+
+  final String name;
+  const ChatPage({super.key, required this.id, required this.name});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -17,15 +25,36 @@ class _ChatPageState extends State<ChatPage> {
   final ValueNotifier<bool> isEmojiPickerVisible = ValueNotifier(false);
   final ValueNotifier<FocusNode> focusNodeNotifier = ValueNotifier(FocusNode());
   final TextEditingController textEditingController = TextEditingController();
-
+  Timer? _timer;
+  bool _isInitialLoad = true;
   @override
   void initState() {
+    super.initState();
+    BlocProvider.of<MessageCubit>(context).viewMessages(widget.id);
     focusNodeNotifier.value.addListener(() {
       if (focusNodeNotifier.value.hasFocus) {
         isEmojiPickerVisible.value = false;
       }
     });
-    super.initState();
+
+    _timer = Timer.periodic(Duration(seconds: 15), (timer) {
+      BlocProvider.of<MessageCubit>(context).viewMessages(widget.id);
+    });
+  }
+
+  @override
+  void dispose() {
+    // Dispose of the timer
+    _timer?.cancel();
+    focusNodeNotifier.value.dispose();
+    textEditingController.dispose();
+    super.dispose();
+  }
+
+  String formatDateTime(String dateTime) {
+    final DateTime parsedDateTime = DateTime.parse(dateTime);
+    final DateFormat formatter = DateFormat('hh:mm a');
+    return formatter.format(parsedDateTime);
   }
 
   @override
@@ -48,7 +77,7 @@ class _ChatPageState extends State<ChatPage> {
               radius: size * 0.045,
               child: Center(
                 child: Text(
-                  getName('Dr. John Doe'),
+                  getName(widget.name),
                   style: GoogleFonts.poppins(
                       textStyle: const TextStyle(
                     color: maincolor,
@@ -59,7 +88,7 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ),
             kwidth10,
-            Text('Dr. John Doe',
+            Text(widget.name,
                 style: GoogleFonts.poppins(
                     textStyle: const TextStyle(
                   color: Colors.white,
@@ -72,40 +101,92 @@ class _ChatPageState extends State<ChatPage> {
       body: Column(
         children: [
           Expanded(
-            child: ListView(
-              shrinkWrap: true,
-              children: const [
-                SizedBox(height: 10),
-                ReplyCard(
-                  message: 'Hello, How can I help you?',
-                  time: '10:00 AM',
-                ),
-                SizedBox(height: 10),
-                OwnMessageCard(
-                  message: 'I am having a headache',
-                  time: '10:05 AM',
-                ),
-                SizedBox(height: 10),
-                ReplyCard(
-                  message: 'I will prescribe you some medicines',
-                  time: '10:10 AM',
-                ),
-                SizedBox(height: 10),
-                OwnMessageCard(
-                  message: 'Thank you',
-                  time: '10:15 AM',
-                ),
-                SizedBox(height: 10),
-                ReplyCard(
-                  message: 'You are welcome',
-                  time: '10:20 AM',
-                ),
-                SizedBox(height: 10),
-                OwnMessageCard(
-                  message: 'Goodbye',
-                  time: '10:25 AM',
-                ),
-              ],
+            child: BlocConsumer<MessageCubit, MessageState>(
+              listener: (context, state) {},
+              builder: (context, state) {
+                return state.isFailureOrSuccessForViewMessage.fold(() {
+                  if (_isInitialLoad) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    return state.chats!.isEmpty || state.chats == null
+                        ? Center(
+                            child: Text(
+                              'No Messages',
+                              style: TextStyle(
+                                color: maincolor,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            reverse: true,
+                            itemCount: state.chats!.length,
+                            itemBuilder: (context, index) {
+                              final message =
+                                  state.chats![state.chats!.length - 1 - index];
+                              return message.sendFrom == 1
+                                  ? OwnMessageCard(
+                                      message: message.msg!,
+                                      time: formatDateTime(message.datetime!),
+                                    )
+                                  : ReplyCard(
+                                      message: message.msg!,
+                                      time: formatDateTime(message.datetime!));
+                            },
+                          );
+                  }
+                }, (either) {
+                  _isInitialLoad = false;
+                  return either.fold((l) {
+                    return const Center(
+                      child: Text('Error'),
+                    );
+                  }, (r) {
+                    return r.isEmpty
+                        ? Center(
+                            child: Text(
+                              'No Messages',
+                              style: TextStyle(
+                                color: maincolor,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          )
+                        : Column(
+                            children: [
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Expanded(
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  reverse: true,
+                                  itemCount: r.length,
+                                  itemBuilder: (context, index) {
+                                    final message = r[r.length - 1 - index];
+                                    return message.sendFrom == 1
+                                        ? OwnMessageCard(
+                                            message: message.msg!,
+                                            time: formatDateTime(
+                                                message.datetime!),
+                                          )
+                                        : ReplyCard(
+                                            message: message.msg!,
+                                            time: formatDateTime(
+                                                message.datetime!));
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                  });
+                });
+              },
             ),
           ),
           Column(
@@ -121,6 +202,11 @@ class _ChatPageState extends State<ChatPage> {
                 },
                 focusNodeNotifier: focusNodeNotifier,
                 textEditingController: textEditingController,
+                onPressed: () {
+                  BlocProvider.of<MessageCubit>(context)
+                      .sendMessage(widget.id, textEditingController.text);
+                  textEditingController.clear();
+                },
               ),
               ValueListenableBuilder(
                 valueListenable: isEmojiPickerVisible,
@@ -140,13 +226,15 @@ class _ChatPageState extends State<ChatPage> {
 
 class ChatInputWidget extends StatelessWidget {
   final VoidCallback onEmojiPressed;
+  final VoidCallback onPressed;
   final ValueNotifier<FocusNode> focusNodeNotifier;
   final TextEditingController textEditingController;
   const ChatInputWidget(
       {required this.onEmojiPressed,
       required this.focusNodeNotifier,
       super.key,
-      required this.textEditingController});
+      required this.textEditingController,
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +290,7 @@ class ChatInputWidget extends StatelessWidget {
           ),
           MaterialButton(
             color: Colors.green,
-            onPressed: () {},
+            onPressed: onPressed,
             padding:
                 const EdgeInsets.only(top: 10, bottom: 10, right: 5, left: 10),
             shape: const CircleBorder(),

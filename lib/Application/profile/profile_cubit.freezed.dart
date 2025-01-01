@@ -21,9 +21,13 @@ mixin _$ProfileState {
       throw _privateConstructorUsedError;
   Option<Either<MainFailure, Unit>> get isFailureOrSuccessForUpdate =>
       throw _privateConstructorUsedError;
+  Option<Either<MainFailure, Unit>> get isFailureOrSuccessForDelete =>
+      throw _privateConstructorUsedError;
   Model? get profileModel => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ProfileState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ProfileStateCopyWith<ProfileState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -38,6 +42,7 @@ abstract class $ProfileStateCopyWith<$Res> {
       {bool isLoading,
       Option<Either<MainFailure, Model>> isFailureOrSuccessForGet,
       Option<Either<MainFailure, Unit>> isFailureOrSuccessForUpdate,
+      Option<Either<MainFailure, Unit>> isFailureOrSuccessForDelete,
       Model? profileModel});
 }
 
@@ -51,12 +56,15 @@ class _$ProfileStateCopyWithImpl<$Res, $Val extends ProfileState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ProfileState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? isLoading = null,
     Object? isFailureOrSuccessForGet = null,
     Object? isFailureOrSuccessForUpdate = null,
+    Object? isFailureOrSuccessForDelete = null,
     Object? profileModel = freezed,
   }) {
     return _then(_value.copyWith(
@@ -71,6 +79,10 @@ class _$ProfileStateCopyWithImpl<$Res, $Val extends ProfileState>
       isFailureOrSuccessForUpdate: null == isFailureOrSuccessForUpdate
           ? _value.isFailureOrSuccessForUpdate
           : isFailureOrSuccessForUpdate // ignore: cast_nullable_to_non_nullable
+              as Option<Either<MainFailure, Unit>>,
+      isFailureOrSuccessForDelete: null == isFailureOrSuccessForDelete
+          ? _value.isFailureOrSuccessForDelete
+          : isFailureOrSuccessForDelete // ignore: cast_nullable_to_non_nullable
               as Option<Either<MainFailure, Unit>>,
       profileModel: freezed == profileModel
           ? _value.profileModel
@@ -92,6 +104,7 @@ abstract class _$$InitialImplCopyWith<$Res>
       {bool isLoading,
       Option<Either<MainFailure, Model>> isFailureOrSuccessForGet,
       Option<Either<MainFailure, Unit>> isFailureOrSuccessForUpdate,
+      Option<Either<MainFailure, Unit>> isFailureOrSuccessForDelete,
       Model? profileModel});
 }
 
@@ -103,12 +116,15 @@ class __$$InitialImplCopyWithImpl<$Res>
       _$InitialImpl _value, $Res Function(_$InitialImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ProfileState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? isLoading = null,
     Object? isFailureOrSuccessForGet = null,
     Object? isFailureOrSuccessForUpdate = null,
+    Object? isFailureOrSuccessForDelete = null,
     Object? profileModel = freezed,
   }) {
     return _then(_$InitialImpl(
@@ -123,6 +139,10 @@ class __$$InitialImplCopyWithImpl<$Res>
       isFailureOrSuccessForUpdate: null == isFailureOrSuccessForUpdate
           ? _value.isFailureOrSuccessForUpdate
           : isFailureOrSuccessForUpdate // ignore: cast_nullable_to_non_nullable
+              as Option<Either<MainFailure, Unit>>,
+      isFailureOrSuccessForDelete: null == isFailureOrSuccessForDelete
+          ? _value.isFailureOrSuccessForDelete
+          : isFailureOrSuccessForDelete // ignore: cast_nullable_to_non_nullable
               as Option<Either<MainFailure, Unit>>,
       profileModel: freezed == profileModel
           ? _value.profileModel
@@ -139,6 +159,7 @@ class _$InitialImpl implements _Initial {
       {required this.isLoading,
       required this.isFailureOrSuccessForGet,
       required this.isFailureOrSuccessForUpdate,
+      required this.isFailureOrSuccessForDelete,
       required this.profileModel});
 
   @override
@@ -148,11 +169,13 @@ class _$InitialImpl implements _Initial {
   @override
   final Option<Either<MainFailure, Unit>> isFailureOrSuccessForUpdate;
   @override
+  final Option<Either<MainFailure, Unit>> isFailureOrSuccessForDelete;
+  @override
   final Model? profileModel;
 
   @override
   String toString() {
-    return 'ProfileState(isLoading: $isLoading, isFailureOrSuccessForGet: $isFailureOrSuccessForGet, isFailureOrSuccessForUpdate: $isFailureOrSuccessForUpdate, profileModel: $profileModel)';
+    return 'ProfileState(isLoading: $isLoading, isFailureOrSuccessForGet: $isFailureOrSuccessForGet, isFailureOrSuccessForUpdate: $isFailureOrSuccessForUpdate, isFailureOrSuccessForDelete: $isFailureOrSuccessForDelete, profileModel: $profileModel)';
   }
 
   @override
@@ -169,15 +192,26 @@ class _$InitialImpl implements _Initial {
                     isFailureOrSuccessForUpdate) ||
                 other.isFailureOrSuccessForUpdate ==
                     isFailureOrSuccessForUpdate) &&
+            (identical(other.isFailureOrSuccessForDelete,
+                    isFailureOrSuccessForDelete) ||
+                other.isFailureOrSuccessForDelete ==
+                    isFailureOrSuccessForDelete) &&
             (identical(other.profileModel, profileModel) ||
                 other.profileModel == profileModel));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, isLoading,
-      isFailureOrSuccessForGet, isFailureOrSuccessForUpdate, profileModel);
+  int get hashCode => Object.hash(
+      runtimeType,
+      isLoading,
+      isFailureOrSuccessForGet,
+      isFailureOrSuccessForUpdate,
+      isFailureOrSuccessForDelete,
+      profileModel);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ProfileState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$InitialImplCopyWith<_$InitialImpl> get copyWith =>
@@ -191,6 +225,8 @@ abstract class _Initial implements ProfileState {
           isFailureOrSuccessForGet,
       required final Option<Either<MainFailure, Unit>>
           isFailureOrSuccessForUpdate,
+      required final Option<Either<MainFailure, Unit>>
+          isFailureOrSuccessForDelete,
       required final Model? profileModel}) = _$InitialImpl;
 
   @override
@@ -200,9 +236,14 @@ abstract class _Initial implements ProfileState {
   @override
   Option<Either<MainFailure, Unit>> get isFailureOrSuccessForUpdate;
   @override
-  Model? get profileModel;
+  Option<Either<MainFailure, Unit>> get isFailureOrSuccessForDelete;
   @override
-  @JsonKey(ignore: true)
+  Model? get profileModel;
+
+  /// Create a copy of ProfileState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$InitialImplCopyWith<_$InitialImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

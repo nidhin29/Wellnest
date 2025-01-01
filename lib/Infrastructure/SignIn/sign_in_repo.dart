@@ -12,7 +12,7 @@ import 'package:wellnest/Presentation/constants/constants.dart';
 class SignInRepo implements SignInService {
   @override
   Future<Either<MainFailure, SignInModel>> signInWithEmailAndPassword(
-      String email, String password) async {
+      String email, String password, String deviceid) async {
     try {
       
       final Map<String, dynamic> headers = {
@@ -20,7 +20,7 @@ class SignInRepo implements SignInService {
       };
       final Response response = await Dio(BaseOptions(headers: headers)).post(
         "${baseUrl}api/UserLogin",
-        data: {"email": email, "password": password},
+        data: {"email": email, "password": password, "deviceid": deviceid},
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         log(response.data.toString());

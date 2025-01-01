@@ -16,13 +16,13 @@ class SignupCubit extends Cubit<SignupState> {
   SignupCubit(this._signUpService, this.tokenService)
       : super(SignupState.initial());
 
-  signUp({required String email, required String password}) async {
+  signUp({required String email, required String password,required String deviceid}) async {
     emit(state.copyWith(
       isLoading: true,
       isFailureOrSuccess: none(),
     ));
     final Either<MainFailure, Unit> response =
-        await _signUpService.signUp(email: email, password: password);
+        await _signUpService.signUp(email: email, password: password,deviceid: deviceid);
     response.fold(
         (l) => emit(state.copyWith(
               isLoading: false,

@@ -7,6 +7,7 @@ import 'package:wellnest/Domain/Profile/model.dart';
 import 'package:wellnest/Domain/Profile/profile_model.dart';
 import 'package:wellnest/Domain/Profile/profile_service.dart';
 import 'package:wellnest/Domain/TokenManager/token_service.dart';
+import 'package:wellnest/Domain/signout/sign_out_service.dart';
 
 part 'profile_state.dart';
 part 'profile_cubit.freezed.dart';
@@ -15,7 +16,8 @@ part 'profile_cubit.freezed.dart';
 class ProfileCubit extends Cubit<ProfileState> {
   final ProfileService profileService;
   final TokenService tokenService;
-  ProfileCubit(this.profileService, this.tokenService)
+  final SignOutService signOutService;
+  ProfileCubit(this.profileService, this.tokenService, this.signOutService)
       : super(ProfileState.initial());
 
   getProfile() async {
@@ -41,6 +43,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   deleteEmail() {
     tokenService.deleteEmail();
+
   }
 
   updateProfile({required ProfileModel profileModel}) async {
@@ -59,6 +62,25 @@ class ProfileCubit extends Cubit<ProfileState> {
         emit(state.copyWith(
           isLoading: false,
           isFailureOrSuccessForUpdate: some(right(r)),
+        ));
+      },
+    );
+  }
+
+  signOut(String deviceid) async {
+    final response = await signOutService.signOut(deviceid);
+    response.fold(
+      (f) {
+           emit(state.copyWith(
+            isLoading: false,
+            isFailureOrSuccessForDelete: some(
+              left(f),
+            )));
+      },
+      (r) {
+         emit(state.copyWith(
+          isLoading: false,
+          isFailureOrSuccessForDelete: some(right(r)),
         ));
       },
     );

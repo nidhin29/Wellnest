@@ -90,6 +90,9 @@ class _$MainFailureCopyWithImpl<$Res, $Val extends MainFailure>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of MainFailure
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -106,6 +109,9 @@ class __$$ClientFailureImplCopyWithImpl<$Res>
   __$$ClientFailureImplCopyWithImpl(
       _$ClientFailureImpl _value, $Res Function(_$ClientFailureImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of MainFailure
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -226,6 +232,9 @@ class __$$ServerFailureImplCopyWithImpl<$Res>
   __$$ServerFailureImplCopyWithImpl(
       _$ServerFailureImpl _value, $Res Function(_$ServerFailureImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of MainFailure
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -346,6 +355,9 @@ class __$$AuthFailureImplCopyWithImpl<$Res>
   __$$AuthFailureImplCopyWithImpl(
       _$AuthFailureImpl _value, $Res Function(_$AuthFailureImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of MainFailure
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -466,6 +478,9 @@ class __$$IncorrectCredentialImplCopyWithImpl<$Res>
   __$$IncorrectCredentialImplCopyWithImpl(_$IncorrectCredentialImpl _value,
       $Res Function(_$IncorrectCredentialImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of MainFailure
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -587,6 +602,9 @@ class __$$otherFailureImplCopyWithImpl<$Res>
   __$$otherFailureImplCopyWithImpl(
       _$otherFailureImpl _value, $Res Function(_$otherFailureImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of MainFailure
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc

@@ -7,6 +7,7 @@ import 'package:wellnest/Domain/Failure/failure.dart';
 import 'package:wellnest/Presentation/Auth/fill_profile.dart';
 import 'package:wellnest/Presentation/Home/mainscreen.dart';
 import 'package:wellnest/Presentation/Splash/intro.dart';
+import 'package:wellnest/Presentation/Splash/notification.dart';
 import 'package:wellnest/Presentation/common%20widgets/snackbar.dart';
 import 'package:wellnest/Presentation/constants/constants.dart';
 import 'package:wellnest/Presentation/constants/loading.dart';
@@ -17,6 +18,9 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+    
+      NotificationHandle().requestNotificationPermission();
+     
       BlocProvider.of<LoggedinCubit>(context).isLoggedIn();
     });
     return Scaffold(
@@ -24,8 +28,7 @@ class SplashPage extends StatelessWidget {
       body: BlocListener<ProfileCubit, ProfileState>(
         listener: (context, state) {
           state.isFailureOrSuccessForGet.fold(
-            () {          
-            },
+            () {},
             (either) => either.fold(
               (failure) {
                 if (!state.isLoading) {
@@ -41,8 +44,8 @@ class SplashPage extends StatelessWidget {
                         text: "Something Unexpected Happened");
                   }
                 }
-                 Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const IntroPage()));
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => const IntroPage()));
               },
               (r) {
                 r.profileUpdated == 0
@@ -50,8 +53,7 @@ class SplashPage extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) => FillProfilePage(),
                         ),
-                        (route)=> false
-                      )
+                        (route) => false)
                     : Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                           builder: (context) => const MainScreenPage(),

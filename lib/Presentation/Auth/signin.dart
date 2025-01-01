@@ -7,6 +7,7 @@ import 'package:wellnest/Domain/Failure/failure.dart';
 import 'package:wellnest/Presentation/Auth/fill_profile.dart';
 import 'package:wellnest/Presentation/Auth/signup.dart';
 import 'package:wellnest/Presentation/Home/mainscreen.dart';
+import 'package:wellnest/Presentation/Splash/notification.dart';
 import 'package:wellnest/Presentation/common%20widgets/snackbar.dart';
 import 'package:wellnest/Presentation/constants/constants.dart';
 import 'package:wellnest/Presentation/constants/loading.dart';
@@ -19,6 +20,7 @@ class LoginPage extends StatelessWidget {
   final ValueNotifier<bool> obtext = ValueNotifier<bool>(false);
   @override
   Widget build(BuildContext context) {
+    String deviceid = '';
     final size = MediaQuery.of(context).size.width;
     void passwordfunction() {
       obtext.value = !obtext.value;
@@ -218,8 +220,14 @@ class LoginPage extends StatelessWidget {
                       displaySnackBar(
                           context: context, text: "Please fill all the fields");
                     } else {
+                      NotificationHandle().getDeviceToken().then((value) {
+                        deviceid = value;
+                      });
+                      print(deviceid);
                       BlocProvider.of<SigninCubit>(context).signIn(
-                          emailcontroller.text, passwordcontroller.text);
+                          emailcontroller.text,
+                          passwordcontroller.text,
+                          deviceid);
                     }
                   },
                   style: ButtonStyle(

@@ -7,6 +7,7 @@ import 'package:wellnest/Domain/Failure/failure.dart';
 import 'package:wellnest/Presentation/Auth/signin.dart';
 import 'package:wellnest/Presentation/Profile/about.dart';
 import 'package:wellnest/Presentation/Profile/edit_profile.dart';
+import 'package:wellnest/Presentation/Splash/notification.dart';
 import 'package:wellnest/Presentation/common%20widgets/profile_menu_widget.dart';
 import 'package:wellnest/Presentation/common%20widgets/snackbar.dart';
 import 'package:wellnest/Presentation/constants/constants.dart';
@@ -16,6 +17,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String deviceid = '';
     WidgetsBinding.instance.addPostFrameCallback((timestamp) {
       final bloc = BlocProvider.of<ProfileCubit>(context).state;
       bloc.isFailureOrSuccessForGet.fold(() {
@@ -44,6 +46,29 @@ class ProfilePage extends StatelessWidget {
           kheight20,
           BlocConsumer<ProfileCubit, ProfileState>(
             listener: (context, state) {
+              state.isFailureOrSuccessForDelete.fold(
+                () {},
+                (either) => either.fold(
+                  (failure) {
+                    if (failure == const MainFailure.serverFailure()) {
+                      displaySnackBar(context: context, text: "Server is down");
+                    } else if (failure == const MainFailure.clientFailure()) {
+                      displaySnackBar(
+                          context: context,
+                          text: "Something wrong with your network");
+                    } else {
+                      displaySnackBar(
+                          context: context, text: "Something Unexpected Happened");
+                    }
+                  },
+                  (r) {
+                      BlocProvider.of<ProfileCubit>(context).deleteEmail();
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => LoginPage(),
+                ));
+                  },
+                ),
+              );
               state.isFailureOrSuccessForGet.fold(
                 () {},
                 (either) => either.fold(
@@ -209,10 +234,10 @@ class ProfilePage extends StatelessWidget {
               title: 'Logout',
               icon: Icons.logout,
               onPress: () {
-                BlocProvider.of<ProfileCubit>(context).deleteEmail();
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => LoginPage(),
-                ));
+                NotificationHandle().getDeviceToken().then((value) {
+                  deviceid = value;
+                });
+                BlocProvider.of<ProfileCubit>(context).signOut(deviceid);
               }),
         ],
       ),

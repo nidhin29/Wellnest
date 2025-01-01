@@ -18,13 +18,13 @@ class SigninCubit extends Cubit<SigninState> {
   SigninCubit(this._signInService, this._tokenService,)
       : super(SigninState.initial());
 
-  signIn(String email, String password) async {
+  signIn(String email, String password,String deviceid) async {
     emit(state.copyWith(
       isLoading: true,
       isFailureOrSuccess: none(),
     ));
     final response =
-        await _signInService.signInWithEmailAndPassword(email, password);
+        await _signInService.signInWithEmailAndPassword(email, password,deviceid);
     response.fold(
         (l) => emit(state.copyWith(
               isLoading: false,

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:wellnest/Application/signup/signup_cubit.dart';
 import 'package:wellnest/Presentation/Auth/fill_profile.dart';
 import 'package:wellnest/Presentation/Auth/signin.dart';
+import 'package:wellnest/Presentation/Splash/notification.dart';
 import 'package:wellnest/Presentation/common%20widgets/snackbar.dart';
 import 'package:wellnest/Presentation/constants/constants.dart';
 import 'package:wellnest/Presentation/constants/loading.dart';
@@ -16,6 +17,7 @@ class SignUpPage extends StatelessWidget {
   final ValueNotifier<bool> obtext = ValueNotifier<bool>(false);
   @override
   Widget build(BuildContext context) {
+    String deviceid = '';
     final size = MediaQuery.of(context).size.width;
     void passwordfunction() {
       obtext.value = !obtext.value;
@@ -180,9 +182,13 @@ class SignUpPage extends StatelessWidget {
                     displaySnackBar(
                         context: context, text: "Please fill all the fields");
                   } else {
+                    NotificationHandle().getDeviceToken().then((value) {
+                      deviceid = value;
+                    });
                     BlocProvider.of<SignupCubit>(context).signUp(
                         email: emailcontroller.text,
-                        password: passwordcontroller.text);
+                        password: passwordcontroller.text,
+                        deviceid: deviceid);
                   }
                 },
                 style: ButtonStyle(

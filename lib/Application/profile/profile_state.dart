@@ -6,6 +6,7 @@ abstract class ProfileState with _$ProfileState {
     required bool isLoading,
     required Option<Either<MainFailure, Model>> isFailureOrSuccessForGet,
     required Option<Either<MainFailure, Unit>> isFailureOrSuccessForUpdate,
+    required Option<Either<MainFailure, Unit>> isFailureOrSuccessForDelete,
     required Model? profileModel,
   }) = _Initial;
 
@@ -14,5 +15,6 @@ abstract class ProfileState with _$ProfileState {
         isFailureOrSuccessForGet: none(),
         isFailureOrSuccessForUpdate: none(),
         profileModel: null,
+        isFailureOrSuccessForDelete: none(),
       );
 }

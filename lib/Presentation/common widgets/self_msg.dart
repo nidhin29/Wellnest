@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wellnest/Presentation/constants/constants.dart';
 
-
 class OwnMessageCard extends StatelessWidget {
   const OwnMessageCard({
     super.key,
@@ -28,7 +27,7 @@ class OwnMessageCard extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.only(
-                  left: 8,
+                  left: 24,
                   right: 50,
                   top: 5,
                   bottom: 20,
@@ -42,20 +41,20 @@ class OwnMessageCard extends StatelessWidget {
               ),
               Positioned(
                 bottom: 4,
-                right: 10,
+                right: 5,
                 child: Row(
                   children: [
                     Text(
                       time,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 11.9,
                         color: Colors.grey[600],
                       ),
                     ),
                     kwidth5,
                     const Icon(
                       Icons.done_all,
-                      size: 20,
+                      size: 18,
                     ),
                   ],
                 ),

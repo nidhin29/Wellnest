@@ -95,7 +95,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     }
                   }
                 },
-                (r) {},
+                (r) {
+                  _nameController.text =
+                      r.name == null || r.name == '' ? "XXXX" : r.name!;
+                  _ageController.text =
+                      r.age == null || r.age == '' ? "00" : r.age!.toString();
+                  _weightController.text =
+                      r.address == null || r.address == '' ? "00" : r.address!;
+                  _facebookController.text =
+                      r.apiKey == null || r.apiKey == '' ? "XXXX" : r.apiKey!;
+                  _genderNotifier.value =
+                      r.gender == null || r.gender == '' ? 'Male' : r.gender!;
+                },
               ),
             );
           },
@@ -119,18 +130,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 } else {
                   const Center(child: Text('Impossible Error...'));
                 }
-              }, (r) {
-                _nameController.text =
-                    r.name == null || r.name == '' ? "XXXX" : r.name!;
-                _ageController.text =
-                    r.age == null || r.age == '' ? "00" : r.age!.toString();
-                _weightController.text =
-                    r.address == null || r.address == '' ? "00" : r.address!;
-                _facebookController.text =
-                    r.apiKey == null || r.apiKey == '' ? "XXXX" : r.apiKey!;
-                _genderNotifier.value =
-                    r.gender == null || r.gender == '' ? 'Male' : r.gender!;
-              });
+              }, (r) {});
             });
             return Scaffold(
               appBar: AppBar(

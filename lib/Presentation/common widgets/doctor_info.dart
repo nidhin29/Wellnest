@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:wellnest/Presentation/constants/constants.dart';
 
-
 class DoctorInfo extends StatelessWidget {
-  const DoctorInfo({super.key, required this.patients, required this.exp});
+  const DoctorInfo(
+      {super.key,
+      required this.patients,
+      required this.exp,
+      required this.raring});
 
   final int patients;
   final int exp;
+  final int raring;
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +28,9 @@ class DoctorInfo extends StatelessWidget {
         ),
         kwidth10,
         kwidth5,
-        const InfoCard(
+        InfoCard(
           label: 'Rating',
-          value: '4.6',
+          value: '$raring',
         ),
       ],
     );
