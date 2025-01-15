@@ -71,17 +71,9 @@ class ProfileCubit extends Cubit<ProfileState> {
     final response = await signOutService.signOut(deviceid);
     response.fold(
       (f) {
-           emit(state.copyWith(
-            isLoading: false,
-            isFailureOrSuccessForDelete: some(
-              left(f),
-            )));
       },
       (r) {
-         emit(state.copyWith(
-          isLoading: false,
-          isFailureOrSuccessForDelete: some(right(r)),
-        ));
+        
       },
     );
   }

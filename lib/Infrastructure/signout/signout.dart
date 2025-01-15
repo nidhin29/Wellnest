@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellnest/Domain/Failure/failure.dart';
 import 'package:wellnest/Domain/signout/sign_out_service.dart';
 import 'package:wellnest/Presentation/constants/constants.dart';
@@ -11,15 +12,16 @@ import 'package:wellnest/Presentation/constants/constants.dart';
 @LazySingleton(as: SignOutService)
 class SignoutRepo implements SignOutService {
   @override
-  Future<Either<MainFailure, Unit>> signOut(String deviceid) async{
-    
-        try {
+  Future<Either<MainFailure, Unit>> signOut(String deviceid) async {
+    try {
       final Map<String, dynamic> headers = {
         'Content-Type': 'application/json',
       };
+      final sha = await SharedPreferences.getInstance();
+      final email = sha.getString('email');
       final Response response = await Dio(BaseOptions(headers: headers)).post(
         "${baseUrl}api/UserLogout",
-        data: {"deviceid": deviceid},
+        data: {'email': email},
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         log(response.data.toString());
@@ -39,6 +41,5 @@ class SignoutRepo implements SignOutService {
         return const Left(MainFailure.otherFailure());
       }
     }
-     
   }
 }

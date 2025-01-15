@@ -50,22 +50,9 @@ class ProfilePage extends StatelessWidget {
                 () {},
                 (either) => either.fold(
                   (failure) {
-                    if (failure == const MainFailure.serverFailure()) {
-                      displaySnackBar(context: context, text: "Server is down");
-                    } else if (failure == const MainFailure.clientFailure()) {
-                      displaySnackBar(
-                          context: context,
-                          text: "Something wrong with your network");
-                    } else {
-                      displaySnackBar(
-                          context: context, text: "Something Unexpected Happened");
-                    }
+                   
                   },
                   (r) {
-                      BlocProvider.of<ProfileCubit>(context).deleteEmail();
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => LoginPage(),
-                ));
                   },
                 ),
               );
@@ -238,6 +225,10 @@ class ProfilePage extends StatelessWidget {
                   deviceid = value;
                 });
                 BlocProvider.of<ProfileCubit>(context).signOut(deviceid);
+                  BlocProvider.of<ProfileCubit>(context).deleteEmail();
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => LoginPage(),
+                ));
               }),
         ],
       ),

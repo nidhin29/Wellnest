@@ -133,6 +133,7 @@ class SchedulePage extends StatelessWidget {
                       );
                     },
                     (r) {
+                      print(r.doctors![0].experence);
                       return r.doctors!.isEmpty || r.doctors == null
                           ? Padding(
                               padding: const EdgeInsets.only(top: 150),
@@ -174,17 +175,16 @@ class SchedulePage extends StatelessWidget {
                                     onTap: () => Navigator.of(context)
                                         .push(MaterialPageRoute(
                                       builder: (context) => DoctorDetailsPage(
-                                        model: Smodel(      
-                                            name: r.doctors![index].name!,
-                                            education:
-                                                r.doctors![index].education!,
-                                            patients:
-                                                r.doctors![index].patents!,
-                                            exp: int.parse(
-                                                r.doctors![index].experence!),
-                                            about: r.doctors![index].about!,
-                                            rating: r.doctors![index].rating!,
-                                            email:r.doctors![index].email!,),
+                                        model: Smodel(
+                                          name: r.doctors![index].name!,
+                                          education:
+                                              r.doctors![index].education!,
+                                          patients: r.doctors![index].patents!,
+                                          exp: _parseExperience(r.doctors![index].experence!),
+                                          about: r.doctors![index].about ?? '',
+                                          rating: r.doctors![index].rating!,
+                                          email: r.doctors![index].email!,
+                                        ),
                                       ),
                                     )),
                                   );
@@ -200,5 +200,14 @@ class SchedulePage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+int _parseExperience(String experience) {
+  final expMatch = RegExp(r'\d+').firstMatch(experience);
+  if (expMatch != null) {
+    return int.parse(expMatch.group(0)!);
+  } else {
+    return 0; // Default value if no numeric part is found
   }
 }
