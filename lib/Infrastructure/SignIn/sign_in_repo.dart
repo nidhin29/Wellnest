@@ -18,6 +18,7 @@ class SignInRepo implements SignInService {
       final Map<String, dynamic> headers = {
         'Content-Type': 'application/json',
       };
+      log(" deviceid: $deviceid");
       final Response response = await Dio(BaseOptions(headers: headers)).post(
         "${baseUrl}api/UserLogin",
         data: {"email": email, "password": password, "deviceid": deviceid},

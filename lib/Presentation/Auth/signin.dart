@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -221,13 +223,12 @@ class LoginPage extends StatelessWidget {
                           context: context, text: "Please fill all the fields");
                     } else {
                       NotificationHandle().getDeviceToken().then((value) {
-                        deviceid = value;
+                        log(value);
+                        BlocProvider.of<SigninCubit>(context).signIn(
+                            emailcontroller.text,
+                            passwordcontroller.text,
+                            value);
                       });
-                      print(deviceid);
-                      BlocProvider.of<SigninCubit>(context).signIn(
-                          emailcontroller.text,
-                          passwordcontroller.text,
-                          deviceid);
                     }
                   },
                   style: ButtonStyle(
