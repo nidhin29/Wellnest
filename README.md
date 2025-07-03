@@ -185,7 +185,7 @@ Firebase account (for backend services)
 
 ## 🤝 Contributing
 
-We welcome contributions! 
+Contributions are welcomed! 
 
 ### **Development Setup**
 1. Fork the repository
